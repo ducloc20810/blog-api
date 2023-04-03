@@ -1,4 +1,5 @@
 from flask import Blueprint
+from ..models import user, like, post, post_tag, tag, comment, like, read, favorite
 
 home = Blueprint("home", __name__)
 

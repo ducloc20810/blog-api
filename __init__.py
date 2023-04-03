@@ -1,5 +1,4 @@
 from flask import Flask
-from .controllers.test import test as test_controller
 from .controllers.home import home as home_controller
 from .db import db, ma
 
@@ -11,7 +10,6 @@ def create_db(app):
 
 
 def add_routes(app):
-    app.register_blueprint(test_controller)
     app.register_blueprint(home_controller)
 
 

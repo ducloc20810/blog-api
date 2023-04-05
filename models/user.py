@@ -18,3 +18,25 @@ class User(db.Model):
     likes = relationship("Post", secondary="like", back_populates="liked_users")
     reads = relationship("Post", secondary="read", back_populates="read_users")
     comments = relationship("Post", secondary="comment", back_populates="comments")
+
+
+like = db.Table(
+    "like",
+    db.Model.metadata,
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("post_id", db.Integer, db.ForeignKey("post.id"), primary_key=True),
+)
+
+favorite = db.Table(
+    "favorite",
+    db.Model.metadata,
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("post_id", db.Integer, db.ForeignKey("post.id"), primary_key=True),
+)
+
+read = db.Table(
+    "read",
+    db.Model.metadata,
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("post_id", db.Integer, db.ForeignKey("post.id"), primary_key=True),
+)

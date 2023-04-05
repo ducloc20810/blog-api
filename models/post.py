@@ -1,5 +1,5 @@
 from ..db import db
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Table
 from sqlalchemy.orm import relationship
 
 
@@ -18,3 +18,11 @@ class Post(db.Model):
     favorite_users = relationship(
         "User", secondary="favorite", back_populates="favorites"
     )
+
+
+post_tag = Table(
+    "post_tag",
+    db.Model.metadata,
+    db.Column("post_id", db.Integer, db.ForeignKey("post.id"), primary_key=True),
+    db.Column("tag_id", db.Integer, db.ForeignKey("tag.id"), primary_key=True),
+)

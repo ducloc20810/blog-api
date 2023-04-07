@@ -1,5 +1,6 @@
 from flask import Flask
-from .controllers.home import home as home_controller
+from .controllers.home import home
+from .controllers.auth import register
 from .db import db, ma
 
 
@@ -10,7 +11,8 @@ def create_db(app):
 
 
 def add_routes(app):
-    app.register_blueprint(home_controller)
+    app.register_blueprint(home)
+    app.register_blueprint(register)
 
 
 def create_app(config_file="config.py"):

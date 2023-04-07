@@ -1,5 +1,4 @@
 from flask import Blueprint
-from ..models import user, post, tag, comment
 
 home = Blueprint("home", __name__)
 

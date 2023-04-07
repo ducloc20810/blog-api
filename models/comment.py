@@ -4,8 +4,6 @@ from sqlalchemy.orm import relationship
 
 
 class Comment(db.Model):
-    __tablename__ = "comment"
-
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, ForeignKey("post.id"))
     user_id = db.Column(db.Integer, ForeignKey("user.id"))

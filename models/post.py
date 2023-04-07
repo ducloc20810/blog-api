@@ -1,18 +1,20 @@
 from ..db import db
-from sqlalchemy import ForeignKey, Table
-from sqlalchemy.orm import relationship
+from sqlalchemy import Table
+from sqlalchemy.orm import relationship, Mapped
+from .tag import Tag
+from .comment import Comment
 
 
 class Post(db.Model):
-    __tablename__ = "post"
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     content = db.Column(db.String)
-    author = db.Column(db.String, ForeignKey("user.id"), nullable=False)
-    user = relationship("User", back_populates="posts")
-    tags = relationship("Tag", secondary="post-tag", back_populates="posts")
-    comments = relationship("Comment", back_populates="comments")
+    author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    author = relationship("User", back_populates="posts")
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag", secondary="post_tag", back_populates="posts"
+    )
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="post")
     liked_users = relationship("User", secondary="like", back_populates="likes")
     read_users = relationship("User", secondary="read", back_populates="reads")
     favorite_users = relationship(

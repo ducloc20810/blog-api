@@ -15,17 +15,7 @@ def check_refresh_token_expired(refresh_token):
 
 
 def create_refresh_token(user_id):
-    existing_token_object = get_refresh_token_by_user_id(user_id)
-
-    if existing_token_object:
-        token_string = existing_token_object.token;
-        if check_refresh_token_expired(token_string):
-            db.session.delete(existing_token_object)
-            db.session.commit()
-        else:
-            return token_string
-
-    new_token = token = encode_refresh_token(user_id)
+    new_token = encode_refresh_token(user_id)
 
     new_refresh_token = RefreshToken(token=new_token, user_id=user_id)
 
@@ -33,3 +23,8 @@ def create_refresh_token(user_id):
     db.session.commit()
 
     return new_token
+
+
+def delete_refresh_token(existing_refresh_token: RefreshToken) -> None:
+    db.session.delete(existing_refresh_token)
+    db.session.commit()

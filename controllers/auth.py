@@ -2,7 +2,12 @@ from flask import Blueprint, request
 import bcrypt
 from ..schemas.user import UserSchema, LoginSchema
 from ..engines.user import create_user, get_user_by_email
-from ..engines.refresh_token import create_refresh_token, get_refresh_token_by_user_id
+from ..engines.refresh_token import (
+    create_refresh_token,
+    get_refresh_token_by_user_id,
+    check_refresh_token_expired,
+    delete_refresh_token,
+)
 from ..libs.token import encode_access_token, decode_access_token
 
 user_schema = UserSchema()
@@ -52,6 +57,21 @@ def login():
 
     access_token = encode_access_token(user.id)
 
-    refresh_token = create_refresh_token(user.id)
+    refresh_token = ""
+
+    # Check if refresh token for user is created
+    existing_token_object = get_refresh_token_by_user_id(user.id)
+
+    # Check if existing token is expired or not
+    if existing_token_object:
+        token_string = existing_token_object.token
+        # If token is expired, delete token
+        if check_refresh_token_expired(token_string):
+            delete_refresh_token(existing_token_object)
+            refresh_token = create_refresh_token(user.id)
+        else:
+            refresh_token = existing_token_object.token
+    else:
+        refresh_token = create_refresh_token(user.id)
 
     return {"access_token": access_token, "refresh_token": refresh_token}, 201

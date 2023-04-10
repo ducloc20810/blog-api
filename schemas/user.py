@@ -8,4 +8,7 @@ class UserSchema(ma.Schema):
     last_name = fields.Str(required=True, allow_none=False)
     email = fields.Str(required=True, allow_none=False)
     password = fields.Str(required=True, allow_none=False)
-    created_at = fields.DateTime(required=True, allow_none=False)
+
+class LoginSchema(ma.Schema):
+    email = fields.Str(required=True, allow_none=False)
+    password = fields.Str(required=True, allow_none=False)

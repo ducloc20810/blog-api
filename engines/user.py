@@ -7,7 +7,7 @@ def create_user(data: UserSchema):
     new_user = User(
         first_name=data["first_name"],
         last_name=data["last_name"],
-        middle_name=data["middle_name"],
+        middle_name=data["middle_name"] if hasattr(data, 'middle_name') else "",
         password=data["password"],
         email=data["email"],
     )

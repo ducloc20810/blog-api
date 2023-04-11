@@ -28,3 +28,7 @@ def create_refresh_token(user_id):
 def delete_refresh_token(existing_refresh_token: RefreshToken) -> None:
     db.session.delete(existing_refresh_token)
     db.session.commit()
+
+
+def get_refresh_token_by_token_string(token_string):
+    return RefreshToken.query.filter(RefreshToken.token == token_string).one_or_none()

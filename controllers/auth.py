@@ -7,6 +7,7 @@ from ..engines.refresh_token import (
     get_refresh_token_by_user_id,
     check_refresh_token_expired,
     delete_refresh_token,
+    get_refresh_token_by_token_string,
 )
 from ..libs.token import encode_access_token, decode_access_token
 
@@ -65,13 +66,40 @@ def login():
     # Check if existing token is expired or not
     if existing_token_object:
         token_string = existing_token_object.token
-        # If token is expired, delete token
+        # If token is expired, delete token and create new token
         if check_refresh_token_expired(token_string):
             delete_refresh_token(existing_token_object)
             refresh_token = create_refresh_token(user.id)
+        # If token is still usable, return token
         else:
             refresh_token = existing_token_object.token
+    # If token is not created, create new token
     else:
         refresh_token = create_refresh_token(user.id)
 
     return {"access_token": access_token, "refresh_token": refresh_token}, 201
+
+
+@auth.post("/refresh-access-token")
+def refresh():
+    data = request.get_json()
+
+    user_token = data["user_token"] if hasattr(data, "user_token") else None
+
+    if user_token is None:
+        return {"message": "Missing refresh token"}, 400
+
+    existing_token = get_refresh_token_by_token_string(data)
+
+    if existing_token is None:
+        return {"message": "Invalid token"}, 401
+
+    if check_refresh_token_expired(user_token):
+        return {"message": "Token expired"}, 401
+
+    delete_refresh_token(existing_token)
+
+    new_refresh_token = create_refresh_token(existing_token.user_id)
+    new_access_token = encode_access_token(existing_token.user_id)
+
+    return {"access_token": new_access_token, "refresh_token": new_refresh_token}, 201

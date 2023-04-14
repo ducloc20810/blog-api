@@ -84,12 +84,12 @@ def login():
 def refresh():
     data = request.get_json()
 
-    user_token = data["user_token"] if hasattr(data, "user_token") else None
+    user_token = data["refresh_token"]
 
     if user_token is None:
         return {"message": "Missing refresh token"}, 400
 
-    existing_token = get_refresh_token_by_token_string(data)
+    existing_token = get_refresh_token_by_token_string(user_token)
 
     if existing_token is None:
         return {"message": "Invalid token"}, 401

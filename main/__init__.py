@@ -2,7 +2,8 @@ from flask import Flask
 from .controllers.home import home
 from .controllers.auth import auth
 from .controllers.user import userController
-from .db import db, ma
+from .controllers.me import me
+from .db import db
 
 
 def create_db(app: Flask) -> None:
@@ -15,6 +16,7 @@ def add_routes(app: Flask) -> None:
     app.register_blueprint(home)
     app.register_blueprint(auth)
     app.register_blueprint(userController)
+    app.register_blueprint(me)
 
 
 def create_app(config_file="config.py") -> Flask:
@@ -23,7 +25,6 @@ def create_app(config_file="config.py") -> Flask:
 
     # init db and schema
     db.init_app(app)
-    ma.init_app(app)
 
     # routes
     add_routes(app)

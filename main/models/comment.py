@@ -1,20 +1,16 @@
-from datetime import datetime
-from ..db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from main.db import db
+from .base import TimestampMixin
 
 
-class Comment(db.Model):
+class Comment(db.Model, TimestampMixin):
     id = db.Column(db.Integer, primary_key=True)
     post_id = db.Column(db.Integer, ForeignKey("post.id"))
     user_id = db.Column(db.Integer, ForeignKey("user.id"))
     content = db.Column(db.String)
     created_at = db.Column(db.DateTime)
     parent_id = db.Column(db.Integer, ForeignKey("comment.id"))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
 
     # Define relationship with Post
     post = relationship("Post", back_populates="comments")

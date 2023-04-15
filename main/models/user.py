@@ -1,20 +1,16 @@
-from datetime import datetime
-from ..db import db
+from main.db import db
 from sqlalchemy.orm import relationship, Mapped
 from .post import Post
+from .base import TimestampMixin
 
 
-class User(db.Model):
+class User(db.Model, TimestampMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
     middle_name = db.Column(db.String)
     last_name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
 
     posts: Mapped[list["Post"]] = relationship("Post", back_populates="author")
     favorites = relationship(

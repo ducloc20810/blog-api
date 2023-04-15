@@ -1,20 +1,17 @@
-from datetime import datetime
-from ..db import db
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship, Mapped
+from main.db import db
 from .tag import Tag
 from .comment import Comment
+from .base import TimestampMixin
 
 
-class Post(db.Model):
+class Post(db.Model, TimestampMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     content = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
-    )
+
     author = relationship("User", back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(
         "Tag", secondary="post_tag", back_populates="posts"

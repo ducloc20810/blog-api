@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
@@ -10,6 +11,10 @@ class Comment(db.Model):
     content = db.Column(db.String)
     created_at = db.Column(db.DateTime)
     parent_id = db.Column(db.Integer, ForeignKey("comment.id"))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
 
     # Define relationship with Post
     post = relationship("Post", back_populates="comments")

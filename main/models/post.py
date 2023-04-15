@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..db import db
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship, Mapped
@@ -10,6 +11,10 @@ class Post(db.Model):
     title = db.Column(db.String)
     content = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
     author = relationship("User", back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(
         "Tag", secondary="post_tag", back_populates="posts"

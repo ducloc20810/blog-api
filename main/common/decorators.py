@@ -1,5 +1,7 @@
 from functools import wraps
+from typing import Type
 from flask import request, g
+import pydantic
 
 from main.libs.token import decode_access_token
 from ..engines.user import get_user_by_id
@@ -47,3 +49,23 @@ def require_access_token(f):
         return f(*args, **kwargs)
 
     return wrapper
+
+
+def get_request_args():
+    if request.method == "GET":
+        return request.args.to_dict()
+
+    return request.get_json() or {}
+
+
+def parse_args_with(schema: Type[pydantic.BaseModel]):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(**kwargs):
+            request_args = get_request_args()
+            parsed_args = schema.parse_obj(request_args)
+            return f(**kwargs, args=parsed_args)
+
+        return wrapper
+
+    return decorator

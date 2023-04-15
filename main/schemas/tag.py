@@ -1,7 +1,6 @@
-from ..db import ma
-from marshmallow import fields
+from pydantic import BaseModel
 
 
-class TagSchema(ma.Schema):
-    name = fields.Str(required=True, allow_none=False)
-    created_at = fields.DateTime(required=True, allow_none=False)
+class TagSchema(BaseModel):
+    name: str
+    created_at: str

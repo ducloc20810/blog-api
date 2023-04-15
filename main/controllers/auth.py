@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 import bcrypt
-from ..schemas.user import UserSchema, LoginSchema
+from main.common.decorators import parse_args_with
+from ..schemas.user import RegisterUserSchema, UserSchema, LoginSchema
 from ..engines.user import create_user, get_user_by_email
 from ..engines.refresh_token import (
     create_refresh_token,
@@ -11,27 +12,29 @@ from ..engines.refresh_token import (
 )
 from ..libs.token import encode_access_token, decode_access_token
 
-user_schema = UserSchema()
-login_schema = LoginSchema()
-
 auth = Blueprint("auth", __name__)
 
 
 @auth.post("/register")
-def signup():
-    data = request.get_json()
-    password = data["password"].encode()
-    data["password"] = bcrypt.hashpw(password, bcrypt.gensalt())
+@parse_args_with(RegisterUserSchema)
+def signup(args: RegisterUserSchema):
+    password = args.password.encode()
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
-    errors = user_schema.validate(data)
-
-    if errors:
-        return {"message": "Validation errors", "errors": errors}, 400
-
-    if get_user_by_email(data["email"]):
+    if get_user_by_email(args.email):
         return {"message": "User already existed"}, 400
 
-    new_user = create_user(data)
+    args_with_hashed_password = UserSchema(
+        first_name=args.first_name,
+        last_name=args.last_name,
+        email=args.email,
+        password=hashed_password,
+        middle_name=args.middle_name,
+    )
+
+    print(args_with_hashed_password)
+
+    new_user = create_user(args_with_hashed_password)
 
     access_token = encode_access_token(new_user.id)
 
@@ -41,19 +44,14 @@ def signup():
 
 
 @auth.post("/login")
-def login():
-    data = request.get_json()
-
-    errors = login_schema.validate(data)
-    if errors:
-        return {"message": "Validation errors", "errors": errors}, 400
-
-    user = get_user_by_email(data["email"])
+@parse_args_with(LoginSchema)
+def login(args: LoginSchema):
+    user = get_user_by_email(args.email)
 
     if user is None:
         return {"message": "User not found"}, 401
 
-    if bcrypt.checkpw(data["password"].encode(), user.password) is False:
+    if bcrypt.checkpw(args.password.encode(), user.password) is False:
         return {"message": "Password does not match"}, 401
 
     access_token = encode_access_token(user.id)
@@ -82,9 +80,9 @@ def login():
 
 @auth.post("/refresh-access-token")
 def refresh():
-    data = request.get_json()
+    args = request.get_json()
 
-    user_token = data["refresh_token"]
+    user_token = args["refresh_token"]
 
     if user_token is None:
         return {"message": "Missing refresh token"}, 400

@@ -1,26 +1,32 @@
-from ..db import ma
-from marshmallow import fields
+from main.schemas.base import BaseSchema
 
 
-class UserSchema(ma.Schema):
-    first_name = fields.Str(required=True, allow_none=False)
-    middle_name = fields.Str(required=False, allow_none=True)
-    last_name = fields.Str(required=True, allow_none=False)
-    email = fields.Str(required=True, allow_none=False)
-    password = fields.Str(required=True, allow_none=False)
-
-    def __getitem__(self, key):
-        return self[key]
+class UserSchema(BaseSchema):
+    first_name: str
+    middle_name: str | None
+    last_name: str
+    email: str
+    password: bytes
 
 
-class UserResponseSchema(ma.Schema):
-    id = fields.Integer(required=False, allow_none=True)
-    first_name = fields.Str(required=True, allow_none=False)
-    middle_name = fields.Str(required=False, allow_none=True)
-    last_name = fields.Str(required=True, allow_none=False)
-    email = fields.Str(required=True, allow_none=False)
+class RegisterUserSchema(UserSchema):
+    password: str
 
 
-class LoginSchema(ma.Schema):
-    email = fields.Str(required=True, allow_none=False)
-    password = fields.Str(required=True, allow_none=False)
+class UserResponseSchema(BaseSchema):
+    id: int
+    first_name: str
+    middle_name: str
+    last_name: str
+    email: str
+
+
+class LoginSchema(BaseSchema):
+    email: str
+    password: str
+
+
+class UpdateUserInfoSchema(BaseSchema):
+    first_name: str | None
+    middle_name: str | None
+    last_name: str | None

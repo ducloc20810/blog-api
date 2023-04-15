@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..db import db
 from sqlalchemy.orm import relationship, Mapped
 from .post import Post
@@ -10,6 +11,11 @@ class User(db.Model):
     last_name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+
     posts: Mapped[list["Post"]] = relationship("Post", back_populates="author")
     favorites = relationship(
         "Post", secondary="favorite", back_populates="favorite_users"

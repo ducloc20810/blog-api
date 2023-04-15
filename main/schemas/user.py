@@ -9,6 +9,9 @@ class UserSchema(ma.Schema):
     email = fields.Str(required=True, allow_none=False)
     password = fields.Str(required=True, allow_none=False)
 
+    def __getitem__(self, key):
+        return self[key]
+
 
 class UserResponseSchema(ma.Schema):
     id = fields.Integer(required=False, allow_none=True)

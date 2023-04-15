@@ -1,8 +1,8 @@
 from functools import wraps
 from flask import request, g
-from ..libs.token import decode_access_token
+
+from main.libs.token import decode_access_token
 from ..engines.user import get_user_by_id
-import jwt
 import datetime
 
 

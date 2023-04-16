@@ -3,6 +3,7 @@ from .controllers.home import home
 from .controllers.auth import auth
 from .controllers.user import userController
 from .controllers.me import me
+from .controllers.post import post
 from .db import db
 
 
@@ -17,6 +18,7 @@ def add_routes(app: Flask) -> None:
     app.register_blueprint(auth)
     app.register_blueprint(userController)
     app.register_blueprint(me)
+    app.register_blueprint(post)
 
 
 def create_app(config_file="config.py") -> Flask:

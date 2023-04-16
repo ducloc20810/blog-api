@@ -11,7 +11,9 @@ class Post(db.Model, TimestampMixin):
     title = db.Column(db.String)
     content = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
 
+    category = relationship("Category", back_populates="posts")
     author = relationship("User", back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(
         "Tag", secondary="post_tag", back_populates="posts"

@@ -45,7 +45,7 @@ def require_access_token(f):
         if user is None:
             return {"message": "Invalid token"}, 401
 
-        g.user = user
+        kwargs["user"] = user
         return f(*args, **kwargs)
 
     return wrapper

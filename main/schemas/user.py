@@ -16,7 +16,7 @@ class RegisterUserSchema(UserSchema):
 class UserResponseSchema(BaseSchema):
     id: int
     first_name: str
-    middle_name: str
+    middle_name: str | None
     last_name: str
     email: str
 

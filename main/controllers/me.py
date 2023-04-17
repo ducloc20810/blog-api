@@ -15,7 +15,7 @@ def get_profile(**kwargs):
     if user is None:
         return {"message": "User not found"}, 404
 
-    return {"data": to_response(schema=UserResponseSchema, clsObject=user)}, 200
+    return {"info": to_response(schema=UserResponseSchema, clsObject=user)}, 200
 
 
 @me.put("/me")
@@ -29,7 +29,7 @@ def update_profile(args: UpdateUserInfoSchema, **kwargs):
     if updated_profile:
         return {
             "message": " Update profile successfully",
-            "data": to_response(schema=UserResponseSchema, clsObject=updated_profile),
+            "info": to_response(schema=UserResponseSchema, clsObject=updated_profile),
         }
 
     return {"message": "Update profile failed"}, 400

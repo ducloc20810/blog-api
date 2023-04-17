@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship, Mapped
 from main.db import db
 from .tag import Tag
 from .comment import Comment
+from .category import Category
 from .base import TimestampMixin
 
 
@@ -13,7 +14,7 @@ class Post(db.Model, TimestampMixin):
     author_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
 
-    category = relationship("Category", back_populates="posts")
+    category: Mapped[Category] = relationship("Category", back_populates="posts")
     author = relationship("User", back_populates="posts")
     tags: Mapped[list["Tag"]] = relationship(
         "Tag", secondary="post_tag", back_populates="posts"

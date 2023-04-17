@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from .base import BaseSchema
 
 
-class TagSchema(BaseModel):
+class TagSchema(BaseSchema):
+    id: int
     name: str
-    created_at: str

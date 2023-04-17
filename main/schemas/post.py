@@ -1,9 +1,11 @@
-from pydantic import BaseModel
+from typing import List
 from .user import UserResponseSchema
-from main.models.category import Category
+from .category import CategoryResponseSchema
+from .base import BaseSchema
+from .tag import TagSchema
 
 
-class PostSchema(BaseModel):
+class PostSchema(BaseSchema):
     title: str
     content: str
 
@@ -13,10 +15,11 @@ class PostResponseSchema(PostSchema):
     title: str
     content: str
     author: UserResponseSchema
-    tags: str
+    category: CategoryResponseSchema | None
+    tags: List[TagSchema] | None
 
 
-class CreatePostSchema(BaseModel):
+class CreatePostSchema(BaseSchema):
     title: str
     content: str
-    category: Category
+    category_id: int

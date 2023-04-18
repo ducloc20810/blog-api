@@ -23,3 +23,8 @@ class CreatePostSchema(BaseSchema):
     title: str
     content: str
     category_id: int
+
+class UpdatePostSchema(BaseSchema):
+    title: str | None
+    content: str | None
+    category_id: int | None

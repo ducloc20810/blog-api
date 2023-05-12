@@ -1,25 +1,27 @@
-### Blog
+# Blog
 
-#### Install with `virtual env`
+An amazing and interesting blog
 
-##### Set up virtual environment
+## Installation
+
+### Set up virtual environment
 
 With `virtualenv`
 ```shell
-virtualenv venv # create 'venv' folder
-source venv/bin/activate # activate env
-deactivate # deactivate env
+virtualenv venv 
+source venv/bin/activate 
+deactivate
 ```
 
 or with `pyenv virtualenv`
 ```shell
 pyenv virtualenv 3.11 venv
 pyenv local venv
-eval "$(pyenv init -)}" # create '.python-version' file 
-eval "$(pyenv virutalenv-init -)}" # init venv automatically
+pyenv init - 
+pyenv virutalenv-init -
 ```
 
-##### Inside virtual environment
+### Inside virtual environment
 Install deps
 ```shell
 poetry install

@@ -4,11 +4,11 @@ from main.libs.common import to_response
 from main.schemas.post import PostResponseSchema, CreatePostSchema, UpdatePostSchema
 from main.common.decorators import require_access_token, parse_args_with
 from main.engines.post import (
-    get_post_by_id,
     create_new_post,
     check_post_owner,
     update_post_with_id,
     check_user_liked_post,
+    get_post_by_id,
 )
 from main.db import db
 
@@ -51,3 +51,19 @@ def update_post(id, args, **kwargs):
     updated_post = update_post_with_id(post_id=id, data=args)
 
     return {"post": to_response(schema=PostResponseSchema, clsObject=updated_post)}, 200
+
+
+@post.post("/posts/<id>/like")
+@require_access_token
+def like_post(id, **kwargs):
+    user = kwargs["user"]
+    post = get_post_by_id(id)
+
+    if check_user_liked_post(user, post):
+        post.liked_users.remove(user)
+    else:
+        post.liked_users.append(user)
+
+    db.session.commit()
+
+    return {}, 200

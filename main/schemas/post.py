@@ -17,6 +17,7 @@ class PostResponseSchema(PostSchema):
     author: UserResponseSchema
     category: CategoryResponseSchema | None
     tags: List[TagSchema] | None
+    liked_users: List[UserResponseSchema]
 
 
 class CreatePostSchema(BaseSchema):

@@ -1,5 +1,5 @@
 from main.models.post import Post
-from main.models.tag import Tag
+from main.models.user import User
 from main.db import db
 from main.schemas.post import CreatePostSchema, UpdatePostSchema
 from main.libs.post import extract_tags
@@ -52,3 +52,7 @@ def update_post_with_id(post_id: int, data: UpdatePostSchema):
 
     db.session.commit()
     return updated_data
+
+
+def check_user_liked_post(user: User, post: Post):
+    return any(user.id == liked_user.id for liked_user in post.liked_users)

@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from .base import BaseSchema
 
 
-class CategoryResponseSchema(BaseModel):
+class CategoryResponseSchema(BaseSchema):
     id: int
     name: str

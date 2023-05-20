@@ -1,10 +1,10 @@
 from main.models.post import Post
 from main.models.user import User
+from main.models.comment import Comment
 from main.db import db
 from main.schemas.post import CreatePostSchema, UpdatePostSchema
-from main.libs.post import extract_tags
 from main.libs.common import update_schema_data
-from .tag import get_tag_by_name, update_tag_from_post_content
+from .tag import update_tag_from_post_content
 
 
 def get_posts_pagination(offset: int, limit: int):
@@ -56,3 +56,12 @@ def update_post_with_id(post_id: int, data: UpdatePostSchema):
 
 def check_user_liked_post(user: User, post: Post):
     return any(user.id == liked_user.id for liked_user in post.liked_users)
+
+
+def user_commend_to_post(user: User, post: Post, content: str):
+    comment = Comment(post_id=post.id, user_id=user.id, content=content)
+
+    db.session.add(comment)
+    db.session.commit()
+
+    return comment

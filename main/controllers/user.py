@@ -32,7 +32,7 @@ def get_user_liked_posts_by_id(id):
 
 
 @userController.get("/users/<id>/read")
-def get_user_liked_posts_by_id(id):
+def get_user_read_posts_by_id(id):
     user = get_user_by_id(id)
 
     if user is None:
@@ -46,7 +46,7 @@ def get_user_liked_posts_by_id(id):
 
 
 @userController.get("/users/<id>/favorites")
-def get_user_liked_posts_by_id(id):
+def get_user_favorite_posts_by_id(id):
     user = get_user_by_id(id)
 
     if user is None:

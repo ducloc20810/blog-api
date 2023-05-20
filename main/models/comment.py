@@ -10,7 +10,7 @@ class Comment(db.Model, TimestampMixin):
     user_id = db.Column(db.Integer, ForeignKey("user.id"))
     content = db.Column(db.String)
     created_at = db.Column(db.DateTime)
-    parent_id = db.Column(db.Integer, ForeignKey("comment.id"))
+    parent_id = db.Column(db.Integer, ForeignKey("comment.id"), default=None)
 
     # Define relationship with Post
     post = relationship("Post", back_populates="comments")

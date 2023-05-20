@@ -3,6 +3,7 @@ from .user import UserResponseSchema
 from .category import CategoryResponseSchema
 from .base import BaseSchema
 from .tag import TagSchema
+from .comment import CommentResponseSchemaWithReplies
 
 
 class PostSchema(BaseSchema):
@@ -18,6 +19,7 @@ class PostResponseSchema(PostSchema):
     category: CategoryResponseSchema | None
     tags: List[TagSchema] | None
     liked_users: List[UserResponseSchema]
+    comments: List[CommentResponseSchemaWithReplies]
 
 
 class CreatePostSchema(BaseSchema):

@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from main.engines.post import get_posts_pagination
+from main.schemas.comment import CommentResponseSchemaWithReplies, CommentRequestSchema
 from main.libs.common import to_response
 from main.schemas.post import PostResponseSchema, CreatePostSchema, UpdatePostSchema
 from main.common.decorators import require_access_token, parse_args_with
@@ -9,6 +10,7 @@ from main.engines.post import (
     update_post_with_id,
     check_user_liked_post,
     get_post_by_id,
+    user_commend_to_post,
 )
 from main.db import db
 
@@ -59,6 +61,9 @@ def like_post(id, **kwargs):
     user = kwargs["user"]
     post = get_post_by_id(id)
 
+    if post is None:
+        return {"message": "Post not found"}, 404
+
     if check_user_liked_post(user, post):
         post.liked_users.remove(user)
     else:
@@ -67,3 +72,22 @@ def like_post(id, **kwargs):
     db.session.commit()
 
     return {}, 200
+
+
+@post.post("/posts/<id>/comments")
+@require_access_token
+@parse_args_with(CommentRequestSchema)
+def commend_post(id, args, **kwargs):
+    user = kwargs["user"]
+    post = get_post_by_id(id)
+
+    if post is None:
+        return {"message": "Post not found"}, 404
+
+    comment = user_commend_to_post(user, post, args.content)
+
+    return {
+        "comment": to_response(
+            schema=CommentResponseSchemaWithReplies, clsObject=comment
+        )
+    }

@@ -11,8 +11,12 @@ class CommentResponseSchema(BaseSchema):
     id: int
     content: str
     user: UserResponseSchema
-    parent_id: int | None
+
+
+class ReplyResponseSchema(CommentResponseSchema):
+    parent_id: int
 
 
 class CommentResponseSchemaWithReplies(CommentResponseSchema):
-    replies: List[CommentResponseSchema]
+    parent_id: None
+    replies: List[ReplyResponseSchema]

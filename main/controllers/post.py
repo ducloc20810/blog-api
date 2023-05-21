@@ -1,6 +1,10 @@
 from flask import Blueprint, request
 from main.engines.post import get_posts_pagination
-from main.schemas.comment import CommentResponseSchemaWithReplies, CommentRequestSchema
+from main.schemas.comment import (
+    CommentResponseSchemaWithReplies,
+    CommentRequestSchema,
+    ReplyResponseSchema,
+)
 from main.libs.common import to_response
 from main.schemas.post import PostResponseSchema, CreatePostSchema, UpdatePostSchema
 from main.common.decorators import require_access_token, parse_args_with
@@ -10,7 +14,9 @@ from main.engines.post import (
     update_post_with_id,
     check_user_liked_post,
     get_post_by_id,
+    get_comment_by_id,
     user_commend_to_post,
+    user_reply_comment,
 )
 from main.db import db
 
@@ -22,6 +28,11 @@ def get_posts():
     offset = int(request.args.get("offset", 0))
     limit = int(request.args.get("limit", 10))
     posts = get_posts_pagination(offset=offset, limit=limit)
+
+    for post in posts:
+        post.comments = [
+            comment for comment in post.comments if comment.parent_id is None
+        ]
 
     response = []
 
@@ -91,3 +102,22 @@ def commend_post(id, args, **kwargs):
             schema=CommentResponseSchemaWithReplies, clsObject=comment
         )
     }
+
+
+@post.post("/posts/<post_id>/comments/<comment_id>/replies")
+@require_access_token
+@parse_args_with(CommentRequestSchema)
+def reply_comment(post_id, comment_id, args, **kwargs):
+    user = kwargs["user"]
+    post = get_post_by_id(post_id)
+    comment = get_comment_by_id(comment_id)
+
+    if post is None:
+        return {"message": "Post not found"}, 404
+
+    if comment is None:
+        return {"message": "Comment not found"}, 404
+
+    reply = user_reply_comment(user, comment, args.content)
+
+    return {"reply": to_response(schema=ReplyResponseSchema, clsObject=reply)}

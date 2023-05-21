@@ -65,3 +65,18 @@ def user_commend_to_post(user: User, post: Post, content: str):
     db.session.commit()
 
     return comment
+
+
+def get_comment_by_id(id):
+    return Comment.query.filter(Comment.id == id).one_or_none()
+
+
+def user_reply_comment(user: User, comment: Comment, content: str):
+    reply = Comment(
+        post_id=comment.post_id, user_id=user.id, content=content, parent_id=comment.id
+    )
+
+    db.session.add(reply)
+    db.session.commit()
+
+    return reply

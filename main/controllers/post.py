@@ -3,7 +3,7 @@ from main.engines.post import get_posts_pagination
 from main.schemas.comment import (
     CommentResponseSchemaWithReplies,
     CommentRequestSchema,
-    ReplyResponseSchema,
+    CommentResponseSchema,
 )
 from main.libs.common import to_response
 from main.schemas.post import PostResponseSchema, CreatePostSchema, UpdatePostSchema
@@ -104,6 +104,33 @@ def commend_post(id, args, **kwargs):
     }
 
 
+@post.put("/posts/<post_id>/comments/<comment_id>")
+@require_access_token
+@parse_args_with(CommentRequestSchema)
+def edit_comment(post_id, comment_id, args, **kwargs):
+    user = kwargs["user"]
+    post = get_post_by_id(post_id)
+    comment = get_comment_by_id(comment_id)
+
+    if post is None:
+        return {"message": "Post not found"}, 404
+
+    if comment is None:
+        return {"message": "Comment not found"}, 404
+
+    if user.id != comment.user_id:
+        return {"message": "Unauthorized"}, 401
+
+    comment.content = args.content
+    db.session.commit()
+
+    return {
+        "comment": to_response(
+            schema=CommentResponseSchemaWithReplies, clsObject=comment
+        )
+    }
+
+
 @post.post("/posts/<post_id>/comments/<comment_id>/replies")
 @require_access_token
 @parse_args_with(CommentRequestSchema)
@@ -120,4 +147,4 @@ def reply_comment(post_id, comment_id, args, **kwargs):
 
     reply = user_reply_comment(user, comment, args.content)
 
-    return {"reply": to_response(schema=ReplyResponseSchema, clsObject=reply)}
+    return {"reply": to_response(schema=CommentResponseSchema, clsObject=reply)}

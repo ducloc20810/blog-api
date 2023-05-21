@@ -1,10 +1,19 @@
-from ..db import db
-from ..models.user import User
-from ..schemas.user import UpdateUserInfoSchema, UserSchema
+from typing import List
+from main.db import db
+from main.models.user import User
+from main.models.role import Role
+from main.schemas.user import UpdateUserInfoSchema, UserSchema
+from main.libs.common import update_schema_data
 
 
-def create_user(data: UserSchema) -> User:
-    new_user = User(**data.__dict__)
+def create_user(data: UserSchema, roles: List[Role]) -> User:
+    new_user = User(
+        first_name=data.first_name,
+        last_name=data.last_name,
+        email=data.email,
+        password=data.password,
+        roles=roles,
+    )
 
     db.session.add(new_user)
     db.session.commit()
@@ -20,14 +29,12 @@ def get_user_by_id(id: int) -> User:
     return User.query.filter(User.id == id).one_or_none()
 
 
-def update_user(id: int, data: UpdateUserInfoSchema) -> User | None:
-    user = get_user_by_id(id)
-
-    if user is None:
-        return None
-
-    for key, value in data.dict(exclude_unset=True).items():
-        setattr(user, key, value)
+def update_user(
+    user: User, data: UpdateUserInfoSchema, roles: List[Role]
+) -> User | None:
+    update_data = data.copy()
+    update_data.roles = roles
+    update_schema_data(data=user, update_data=update_data)
 
     db.session.commit()
     return user

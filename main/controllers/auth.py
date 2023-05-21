@@ -1,28 +1,40 @@
+from typing import List
 from flask import Blueprint, request
 import bcrypt
+from main.models.role import Role
+
 from main.common.decorators import parse_args_with
-from ..schemas.user import RegisterUserSchema, UserSchema, LoginSchema
-from ..engines.user import create_user, get_user_by_email
-from ..engines.refresh_token import (
+from main.schemas.user import RegisterUserRequestSchema, UserSchema, LoginSchema
+from main.engines.user import create_user, get_user_by_email
+from main.engines.refresh_token import (
     create_refresh_token,
     get_refresh_token_by_user_id,
     check_refresh_token_expired,
     delete_refresh_token,
     get_refresh_token_by_token_string,
 )
-from ..libs.token import encode_access_token, decode_access_token
+from ..libs.token import encode_access_token
 
 auth = Blueprint("auth", __name__)
 
 
 @auth.post("/register")
-@parse_args_with(RegisterUserSchema)
-def signup(args: RegisterUserSchema):
+@parse_args_with(RegisterUserRequestSchema)
+def signup(args: RegisterUserRequestSchema):
     password = args.password.encode()
     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
     if get_user_by_email(args.email):
         return {"message": "User already existed"}, 400
+
+    roles: List[Role] = []
+
+    for role_id in args.roles:
+        role = Role.query.filter(Role.id == role_id).one_or_none()
+        if role is None:
+            return {"message": f"Role id {role_id} not found"}, 400
+        else:
+            roles.append(role)
 
     args_with_hashed_password = UserSchema(
         first_name=args.first_name,
@@ -32,9 +44,7 @@ def signup(args: RegisterUserSchema):
         middle_name=args.middle_name,
     )
 
-    print(args_with_hashed_password)
-
-    new_user = create_user(args_with_hashed_password)
+    new_user = create_user(args_with_hashed_password, roles)
 
     access_token = encode_access_token(new_user.id)
 

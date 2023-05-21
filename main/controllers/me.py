@@ -1,9 +1,10 @@
-from flask import Blueprint, g, jsonify, request
+from typing import List
+from flask import Blueprint
 from main.common.decorators import parse_args_with, require_access_token
 from main.engines.user import update_user
 from main.libs.common import to_response
 from main.schemas.user import UpdateUserInfoSchema, UserResponseSchema
-from main.models.user import User
+from main.models.role import Role
 
 me = Blueprint("me", __name__)
 
@@ -24,7 +25,16 @@ def get_profile(**kwargs):
 def update_profile(args: UpdateUserInfoSchema, **kwargs):
     user = kwargs["user"]
 
-    updated_profile = update_user(user.id, args)
+    roles: List[Role] = []
+
+    for role_id in args.roles:
+        role = Role.query.filter(Role.id == role_id).one_or_none()
+        if role is None:
+            raise f"Role id {role_id} not found"
+        else:
+            roles.append(role)
+
+    updated_profile = update_user(user, args, roles)
 
     if updated_profile:
         return {

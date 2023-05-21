@@ -1,24 +1,27 @@
-from main.schemas.base import BaseSchema
+from typing import List
+from .base import BaseSchema
+from .role import RoleSchema
 
 
-class UserSchema(BaseSchema):
+class UserBasicSchema(BaseSchema):
     first_name: str
     middle_name: str | None
     last_name: str
     email: str
+
+
+class UserSchema(UserBasicSchema):
     password: bytes
 
 
-class RegisterUserSchema(UserSchema):
+class RegisterUserRequestSchema(UserBasicSchema):
+    roles: List[int]
     password: str
 
 
-class UserResponseSchema(BaseSchema):
+class UserResponseSchema(UserBasicSchema):
     id: int
-    first_name: str
-    middle_name: str | None
-    last_name: str
-    email: str
+    roles: List[RoleSchema]
 
 
 class LoginSchema(BaseSchema):
@@ -30,3 +33,4 @@ class UpdateUserInfoSchema(BaseSchema):
     first_name: str | None
     middle_name: str | None
     last_name: str | None
+    roles: List[int] | None

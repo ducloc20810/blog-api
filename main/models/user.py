@@ -2,6 +2,7 @@ from main.db import db
 from sqlalchemy.orm import relationship, Mapped
 from .post import Post
 from .base import TimestampMixin
+from .role import Role
 
 
 class User(db.Model, TimestampMixin):
@@ -12,6 +13,9 @@ class User(db.Model, TimestampMixin):
     email = db.Column(db.String, unique=True)
     password = db.Column(db.String)
 
+    roles: Mapped[list[Role]] = relationship(
+        "Role", secondary="user_role", back_populates="users"
+    )
     posts: Mapped[list["Post"]] = relationship("Post", back_populates="author")
     favorites = relationship(
         "Post", secondary="favorite", back_populates="favorite_users"
@@ -45,4 +49,11 @@ read = db.Table(
     db.metadata,
     db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
     db.Column("post_id", db.Integer, db.ForeignKey("post.id"), primary_key=True),
+)
+
+user_role = db.Table(
+    "user_role",
+    db.metadata,
+    db.Column("user_id", db.Integer, db.ForeignKey("user.id"), primary_key=True),
+    db.Column("role_id", db.Integer, db.ForeignKey("role.id"), primary_key=True),
 )
